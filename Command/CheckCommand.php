@@ -58,11 +58,11 @@ class CheckCommand extends Command
         $projects = $this->getApplication()->getProjects();
 
         //Chargement du projet via la ligne de commande
-        if ($this->getOption('project')) {
-            if (null === $this->getArgument('name')) {
+        if ($input->getOption('project')) {
+            if (null === $input->getArgument('name')) {
                 throw new \Exception("Please set the name of project", 1);
             }
-            $projects = [$this->getArgument('name')=>$this->getOption('project')];
+            $projects = [$input->getArgument('name')=>$input->getOption('project')];
         }
 
         foreach ($projects as $projectName => $projectPath) {
