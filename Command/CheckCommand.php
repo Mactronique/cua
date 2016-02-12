@@ -15,10 +15,11 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Process;
+use Symfony\Component\Process\Exception\ProcessFailedException;
+use Symfony\Component\Process\Exception\ProcessTimedOutException;
 
 class CheckCommand extends Command
 {
-
     protected function configure()
     {
         $this
@@ -53,32 +54,48 @@ class CheckCommand extends Command
         }
 
         if (!file_exists($composerPath)) {
-            throw new \Exception("Invalid composer path ".$composerPath, 1);
+            throw new \Exception('Invalid composer path '.$composerPath, 1);
         }
         $projects = $this->getApplication()->getProjects();
 
         //Chargement du projet via la ligne de commande
         if ($input->getOption('project')) {
             if (null === $input->getArgument('name')) {
-                throw new \Exception("Please set the name of project", 1);
+                throw new \Exception('Please set the name of project', 1);
             }
-            $projects = [$input->getArgument('name')=>$input->getOption('project')];
+            $projects = [$input->getArgument('name') => $input->getOption('project')];
         }
 
         foreach ($projects as $projectName => $projectPath) {
+            $resultProject = [
+                'install' => [],
+                'uninstall' => [],
+                'update' => [],
+                'abandoned' => [],
+                'error' => '',
+            ];
+
             $output->writeln(sprintf('Check <info>%s</info> at <comment>%s</comment>', $projectName, $projectPath));
             $process = new Process($composerPath.' update --dry-run --no-ansi');
             $process->setWorkingDirectory($projectPath);
-            $process->mustRun();
+            $process->setTimeout(300);
+            try {
+                $process->mustRun();
+            } catch (ProcessFailedException $e) {
+                $output->writeln('<error> '.$e->getMessage().' </error>');
+                $resultProject['error'] = $process->getErrorOutput();
+                $this->getApplication()->setProjectResult($projectName, $resultProject);
+                $this->getApplication()->saveResult();
+                continue;
+            } catch (ProcessTimedOutException $e) {
+                $output->writeln('<error> '.$e->getMessage().' </error>');
+                $resultProject['error'] = 'Time out '.$e->getMessage();
+                $this->getApplication()->setProjectResult($projectName, $resultProject);
+                $this->getApplication()->saveResult();
+                continue;
+            }
 
             $sortie = $process->getErrorOutput();
-
-            $resultProject = [
-                'install'=>[],
-                'uninstall'=>[],
-                'update'=>[],
-                'abandoned'=>[],
-            ];
 
             if (preg_match('/Nothing to install or update/', $sortie)) {
                 $output->writeln('Rien à mettre à jour');
@@ -87,27 +104,26 @@ class CheckCommand extends Command
             if (preg_match_all('/- Installing ([a-zA-Z0-9\-_\.\/]*) \((.*)\)/', $sortie, $install)) {
                 $r = $install[1];
                 foreach ($r as $key => $lib) {
-                    $resultProject['install'][]=['library'=>$lib, 'version'=>$install[2][$key]];
+                    $resultProject['install'][] = ['library' => $lib, 'version' => $install[2][$key]];
                 }
-
             }
 
             if (preg_match_all('/- Uninstalling ([a-zA-Z0-9\-_\.\/]*) \((.*)\)/', $sortie, $uninstall)) {
                 $r = $uninstall[1];
                 foreach ($r as $key => $lib) {
-                    $resultProject['uninstall'][]=['library'=>$lib, 'version'=>$uninstall[2][$key]];
+                    $resultProject['uninstall'][] = ['library' => $lib, 'version' => $uninstall[2][$key]];
                 }
             }
 
             if (preg_match_all('/- Updating ([a-zA-Z0-9\-_\.\/]*) \((.*)\) to ([a-zA-Z0-9\-_\.\/]*) \((.*)\)/', $sortie, $update)) {
                 $r = $update[1];
                 foreach ($r as $key => $lib) {
-                    $resultProject['update'][]=['from_library'=>$lib, 'from_version'=>$update[2][$key], 'to_library'=>$update[3][$key], 'to_version'=>$update[4][$key]];
+                    $resultProject['update'][] = ['from_library' => $lib, 'from_version' => $update[2][$key], 'to_library' => $update[3][$key], 'to_version' => $update[4][$key]];
                 }
             }
 
             if (preg_match_all('/Package ([a-zA-Z0-9\-_\.\/]*) is abandoned/', $sortie, $abandoned)) {
-                $resultProject['abandoned']= $abandoned[1];
+                $resultProject['abandoned'] = $abandoned[1];
             }
             $output->writeln(sprintf(
                 'Result <info>%d</info> to install, <info>%d</info> to update, <info>%d</info> to remove, <error> %d </error> abandonned',
@@ -119,7 +135,6 @@ class CheckCommand extends Command
 
             $this->getApplication()->setProjectResult($projectName, $resultProject);
             $this->getApplication()->saveResult();
-
         }
         $output->writeln('Fin !');
     }

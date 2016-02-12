@@ -47,9 +47,8 @@ class CuaApplication extends Application
         $this->configureIO($input, $output);
 
         try {
-            $this->boot();
+            $this->boot($input);
         } catch (\Exception $e) {
-
             if ($output instanceof ConsoleOutputInterface) {
                 $this->renderException($e, $output->getErrorOutput());
             } else {
@@ -106,11 +105,22 @@ class CuaApplication extends Application
     }
 
     /**
-     * This function run the first level booting
+     * This function run the first level booting.
      */
-    private function boot()
+    private function boot(InputInterface $input)
     {
-        $configFile = __DIR__.'/cua.yml';
+        $this->config = ['output' => null, 'projects' => [], 'composer_path' => null];
+        if (!$input->hasParameterOption(['--no-configuration'], true)) {
+            $configFile = __DIR__.'/cua.yml';
+            $this->loadConfigurationFile($configFile);
+        }
+    }
+
+    /**
+     * Load the configuration file.
+     */
+    private function loadConfigurationFile($configFile)
+    {
         if (!file_exists($configFile)) {
             throw new \Exception('Le fichier de configuration ($configFile) est absent ! ', 123);
         }
@@ -121,6 +131,5 @@ class CuaApplication extends Application
         $processor = new Processor();
         $configuration = new MainConfiguration();
         $this->config = $processor->processConfiguration($configuration, $configs);
-
     }
 }
