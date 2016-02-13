@@ -5,7 +5,6 @@ namespace Mactronique\CUA;
 use Symfony\Component\Console\Application;
 use Mactronique\CUA\Command\CheckCommand;
 use Mactronique\CUA\Configuration\MainConfiguration;
-use Symfony\Component\Yaml\Yaml;
 use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Input\InputInterface;
@@ -13,10 +12,15 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\ConsoleOutputInterface;
+use Symfony\Component\Yaml\Yaml;
 
 class CuaApplication extends Application
 {
     private $config;
+
+    private $persistance;
+
+    private $results;
 
     public function __construct()
     {
@@ -82,13 +86,23 @@ class CuaApplication extends Application
 
     public function saveResult($path = null)
     {
-        $content = Yaml::dump($this->results, 100);
-        file_put_contents(($path !== null)? $path:$this->config['output'], $content);
+        $this->persistance->save($this->results, $path);
+
+        //$content = Yaml::dump($this->results, 100);
+        //file_put_contents(($path !== null)? $path:$this->config['output'], $content);
     }
 
     public function getComposerPath()
     {
         return $this->config['composer_path'];
+    }
+
+    public function definePersistance($name, $parameters){
+        $className = 'Mactronique\\CUA\\Persistence\\'.$name;
+        if(!class_exists($className)){
+            throw new \Exception("Unable to load this persistance class: ".$className, 1);
+        }
+        $this->persistance = new $className($parameters);
     }
 
     /**
@@ -113,6 +127,8 @@ class CuaApplication extends Application
         if (!$input->hasParameterOption(['--no-config'], true)) {
             $configFile = __DIR__.'/cua.yml';
             $this->loadConfigurationFile($configFile);
+
+            $this->definePersistance($this->config['persistance']['format'], $this->config['persistance']['parameters']);
         }
     }
 
