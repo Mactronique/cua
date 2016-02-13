@@ -42,6 +42,12 @@ class CheckCommand extends Command
                 InputOption::VALUE_REQUIRED,
                 'The path to project'
             )
+            ->addOption(
+                'output',
+                'o',
+                InputOption::VALUE_REQUIRED,
+                'The path to output file'
+            )
         ;
     }
 
@@ -56,6 +62,8 @@ class CheckCommand extends Command
         if (!file_exists($composerPath)) {
             throw new \Exception('Invalid composer path '.$composerPath, 1);
         }
+        $service = new \Mactronique\CUA\Service\CheckUpdateService($composerPath);
+        
         $projects = $this->getApplication()->getProjects();
 
         //Chargement du projet via la ligne de commande
@@ -66,65 +74,23 @@ class CheckCommand extends Command
             $projects = [$input->getArgument('name') => $input->getOption('project')];
         }
 
+        //Pas de fichier de config donc fichier de sortie obligatoire
+        if ($input->hasParameterOption(['--no-config'], true) && null === $input->getOption('output')) {
+            throw new \Exception("Please set the output file option -o or --output", 1);
+        }
+
+        $outputFile = $input->getOption('output');
+        $installedService = new \Mactronique\CUA\Service\InstalledLibraryService();
+
         foreach ($projects as $projectName => $projectPath) {
-            $resultProject = [
-                'install' => [],
-                'uninstall' => [],
-                'update' => [],
-                'abandoned' => [],
-                'error' => '',
-            ];
-
+            
             $output->writeln(sprintf('Check <info>%s</info> at <comment>%s</comment>', $projectName, $projectPath));
-            $process = new Process($composerPath.' update --dry-run --no-ansi');
-            $process->setWorkingDirectory($projectPath);
-            $process->setTimeout(300);
-            try {
-                $process->mustRun();
-            } catch (ProcessFailedException $e) {
-                $output->writeln('<error> '.$e->getMessage().' </error>');
-                $resultProject['error'] = $process->getErrorOutput();
-                $this->getApplication()->setProjectResult($projectName, $resultProject);
-                $this->getApplication()->saveResult();
-                continue;
-            } catch (ProcessTimedOutException $e) {
-                $output->writeln('<error> '.$e->getMessage().' </error>');
-                $resultProject['error'] = 'Time out '.$e->getMessage();
-                $this->getApplication()->setProjectResult($projectName, $resultProject);
-                $this->getApplication()->saveResult();
-                continue;
+            $resultProject = $service->checkcomposerUpdate($projectPath);
+
+            if($resultProject['error']!= ''){
+                $output->writeln(sprintf("<error> %s </error>", $resultProject['error']));
             }
 
-            $sortie = $process->getErrorOutput();
-
-            if (preg_match('/Nothing to install or update/', $sortie)) {
-                $output->writeln('Rien à mettre à jour');
-            }
-
-            if (preg_match_all('/- Installing ([a-zA-Z0-9\-_\.\/]*) \((.*)\)/', $sortie, $install)) {
-                $r = $install[1];
-                foreach ($r as $key => $lib) {
-                    $resultProject['install'][] = ['library' => $lib, 'version' => $install[2][$key]];
-                }
-            }
-
-            if (preg_match_all('/- Uninstalling ([a-zA-Z0-9\-_\.\/]*) \((.*)\)/', $sortie, $uninstall)) {
-                $r = $uninstall[1];
-                foreach ($r as $key => $lib) {
-                    $resultProject['uninstall'][] = ['library' => $lib, 'version' => $uninstall[2][$key]];
-                }
-            }
-
-            if (preg_match_all('/- Updating ([a-zA-Z0-9\-_\.\/]*) \((.*)\) to ([a-zA-Z0-9\-_\.\/]*) \((.*)\)/', $sortie, $update)) {
-                $r = $update[1];
-                foreach ($r as $key => $lib) {
-                    $resultProject['update'][] = ['from_library' => $lib, 'from_version' => $update[2][$key], 'to_library' => $update[3][$key], 'to_version' => $update[4][$key]];
-                }
-            }
-
-            if (preg_match_all('/Package ([a-zA-Z0-9\-_\.\/]*) is abandoned/', $sortie, $abandoned)) {
-                $resultProject['abandoned'] = $abandoned[1];
-            }
             $output->writeln(sprintf(
                 'Result <info>%d</info> to install, <info>%d</info> to update, <info>%d</info> to remove, <error> %d </error> abandonned',
                 count($resultProject['install']),
@@ -132,10 +98,9 @@ class CheckCommand extends Command
                 count($resultProject['uninstall']),
                 count($resultProject['abandoned'])
             ));
-
+            $resultProject['installed'] = $installedService->getInstalledLibrary($projectPath);
             $this->getApplication()->setProjectResult($projectName, $resultProject);
-            $this->getApplication()->saveResult();
+            $this->getApplication()->saveResult($outputFile);
         }
-        $output->writeln('Fin !');
     }
 }

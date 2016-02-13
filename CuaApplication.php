@@ -80,10 +80,10 @@ class CuaApplication extends Application
         $this->results[$projectName] = $content;
     }
 
-    public function saveResult()
+    public function saveResult($path = null)
     {
         $content = Yaml::dump($this->results, 100);
-        file_put_contents($this->config['output'], $content);
+        file_put_contents(($path !== null)? $path:$this->config['output'], $content);
     }
 
     public function getComposerPath()
@@ -99,7 +99,7 @@ class CuaApplication extends Application
     protected function getDefaultInputDefinition()
     {
         $input = parent::getDefaultInputDefinition();
-        $input->addOption(new InputOption('--no-configuration', null, InputOption::VALUE_NONE, 'Do not load the configuration'));
+        $input->addOption(new InputOption('--no-config', null, InputOption::VALUE_NONE, 'Do not load the configuration'));
 
         return $input;
     }
@@ -110,7 +110,7 @@ class CuaApplication extends Application
     private function boot(InputInterface $input)
     {
         $this->config = ['output' => null, 'projects' => [], 'composer_path' => null];
-        if (!$input->hasParameterOption(['--no-configuration'], true)) {
+        if (!$input->hasParameterOption(['--no-config'], true)) {
             $configFile = __DIR__.'/cua.yml';
             $this->loadConfigurationFile($configFile);
         }
