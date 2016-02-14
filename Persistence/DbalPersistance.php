@@ -32,7 +32,7 @@ class DbalPersistance implements Persistence
      */
     public function save(array $content, array $config = null)
     {
-        $this->connexion = new \Doctrine\Dbal\Connexion($this->config);
+        $this->connexion = new \Doctrine\Dbal\Connection($this->config);
 
     }
 
