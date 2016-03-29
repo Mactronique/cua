@@ -25,6 +25,7 @@
         "psr/log": "^1.0",
         "symfony/process": "^3.0",
         "symfony/var-dumper": "^3.0",
-        "symfony/finder": "^3.0"
+        "symfony/finder": "^3.0",
+        "doctrine/dbal": "^2.5"
     }
 }
