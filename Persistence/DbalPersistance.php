@@ -32,7 +32,9 @@ class DbalPersistance implements Persistence
      */
     public function save(array $content, array $config = null)
     {
-        $this->connexion = new \Doctrine\Dbal\Connection($this->config);
+        $configObj = new \Doctrine\DBAL\Configuration();
+        $this->connexion = \Doctrine\DBAL\DriverManager::getConnection($this->config, $configObj);
+
         foreach ($content as $key => $data) {
             $this->installedLib($key, $data['installed']);
             $this->installLib($key, $data['install']);
