@@ -33,11 +33,11 @@ class DbalPersistance implements Persistence
     public function save(array $content, array $config = null)
     {
         $this->connexion = new \Doctrine\Dbal\Connection($this->config);
-
     }
 
     /**
-     * Manage the installed library
+     * Manage the installed library.
+     *
      * @param string $projet
      * @param array  $installed library list
      */
@@ -46,7 +46,8 @@ class DbalPersistance implements Persistence
     }
 
     /**
-     * Manage the library to install
+     * Manage the library to install.
+     *
      * @param string $projet
      * @param array  $install library list
      */
@@ -55,7 +56,8 @@ class DbalPersistance implements Persistence
     }
 
     /**
-     * Manage the library to update
+     * Manage the library to update.
+     *
      * @param string $projet
      * @param array  $update library list
      */
@@ -64,7 +66,8 @@ class DbalPersistance implements Persistence
     }
 
     /**
-     * Manage the library to remove
+     * Manage the library to remove.
+     *
      * @param string $projet
      * @param array  $remove library list
      */
@@ -73,7 +76,8 @@ class DbalPersistance implements Persistence
     }
 
     /**
-     * Manage the abandoned library
+     * Manage the abandoned library.
+     *
      * @param string $projet
      * @param array  $abandonned library list
      */
@@ -83,10 +87,10 @@ class DbalPersistance implements Persistence
 
     private function checkExist($project, $library)
     {
-        $result = $this->connexion->execute('SELECT count(*) as nombre FROM '.$config['table_name']. ' WHERE project= ? AND library=?', [$project, $library]);
+        $result = $this->connexion->execute('SELECT count(*) as nombre FROM '.$this->config['table_name'].' WHERE project= ? AND library=?', [$project, $library]);
         $nb = $result->fetch();
 
-        return $nb['nombre']!=0;
+        return $nb['nombre'] != 0;
     }
 
     /**
@@ -94,6 +98,8 @@ class DbalPersistance implements Persistence
      */
     private function insert(array $data)
     {
+        $data['updated_at'] = new \DateTime();
+        $this->connexion->insert($this->config['table_name'], $data, ['string', 'string', 'string', 'string', 'string', 'string', 'boolean', 'datetime']);
     }
 
     /**
@@ -101,5 +107,12 @@ class DbalPersistance implements Persistence
      */
     private function update(array $data)
     {
+        $data['updated_at'] = new \DateTime();
+        $key['project'] = $data['project'];
+        $key['library'] = $data['library'];
+        unset($data['project']);
+        unset($data['library']);
+
+        $this->connexion->insert($this->config['table_name'], $data, $key, ['string', 'string', 'string', 'string', 'datetime', 'string', 'string']);
     }
 }
