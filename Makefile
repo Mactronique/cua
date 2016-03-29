@@ -1,2 +1,2 @@
 check:
-	docker-compose run --rm tool bash -ci 'composer self-update && ./cua check'
+	docker-compose run --rm tool bash -ci 'php5dismod xdebug && composer self-update && ./cua check'
