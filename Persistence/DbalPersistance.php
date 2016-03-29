@@ -33,6 +33,13 @@ class DbalPersistance implements Persistence
     public function save(array $content, array $config = null)
     {
         $this->connexion = new \Doctrine\Dbal\Connection($this->config);
+        foreach ($content as $key => $data) {
+            $this->installedLib($key, $data['installed']);
+            $this->installLib($key, $data['install']);
+            $this->updateLib($key, $data['update']);
+            $this->removeLib($key, $data['uninstall']);
+            $this->abandonedLib($key, $data['abandoned']);
+        }
     }
 
     /**
@@ -43,6 +50,14 @@ class DbalPersistance implements Persistence
      */
     private function installedLib($project, array $installed)
     {
+        foreach ($install as $library => $version) {
+            $dbData = ['project' => $project, 'library' => $library, 'version' => $version, 'state' => 'installed', 'to_library' => null, 'to_version' => null];
+            if ($this->checkExist($project, $library)) {
+                $this->update($dbData);
+                continue;
+            }
+            $this->insert($dbData);
+        }
     }
 
     /**
@@ -53,6 +68,14 @@ class DbalPersistance implements Persistence
      */
     private function installLib($project, array $install)
     {
+        foreach ($install as $data) {
+            $dbData = ['project' => $project, 'library' => $data['library'], 'version' => $data['version'], 'state' => 'install', 'to_library' => null, 'to_version' => null];
+            if ($this->checkExist($project, $data['library'])) {
+                $this->update($dbData);
+                continue;
+            }
+            $this->insert($dbData);
+        }
     }
 
     /**
@@ -63,6 +86,14 @@ class DbalPersistance implements Persistence
      */
     private function updateLib($project, array $update)
     {
+        foreach ($install as $data) {
+            $dbData = ['project' => $project, 'library' => $data['from_library'], 'version' => $data['from_version'], 'state' => 'update', 'to_library' => $data['to_library'], 'to_version' => $data['to_version']];
+            if ($this->checkExist($project, $data['from_library'])) {
+                $this->update($dbData);
+                continue;
+            }
+            $this->insert($dbData);
+        }
     }
 
     /**
@@ -73,6 +104,14 @@ class DbalPersistance implements Persistence
      */
     private function removeLib($project, array $remove)
     {
+        foreach ($install as $data) {
+            $dbData = ['project' => $project, 'library' => $data['library'], 'version' => $data['version'], 'state' => 'remove', 'to_library' => null, 'to_version' => null];
+            if ($this->checkExist($project, $data['library'])) {
+                $this->update($dbData);
+                continue;
+            }
+            $this->insert($dbData);
+        }
     }
 
     /**
