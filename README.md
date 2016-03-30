@@ -61,5 +61,6 @@ If you whant contribute, please fork my repo, add feature or fix bugs and create
 # Todo
 
 [ ] Add script for create table on other Database (postgre, mssql, etc.).
+
 [ ] Get PHP and extentions requirements by project.
 
