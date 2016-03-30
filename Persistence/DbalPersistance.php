@@ -32,8 +32,8 @@ class DbalPersistance implements Persistence
      */
     public function save(array $content, array $config = null)
     {
-        $configObj = new \Doctrine\DBAL\Configuration();
-        $this->connexion = \Doctrine\DBAL\DriverManager::getConnection($this->config, $configObj);
+        $this->connexion = \Doctrine\DBAL\DriverManager::getConnection($this->config);
+        $this->connexion->connect();
 
         foreach ($content as $key => $data) {
             $this->installedLib($key, $data['installed']);
@@ -42,6 +42,7 @@ class DbalPersistance implements Persistence
             $this->removeLib($key, $data['uninstall']);
             $this->abandonedLib($key, $data['abandoned']);
         }
+
     }
 
     /**
@@ -128,7 +129,7 @@ class DbalPersistance implements Persistence
 
     private function checkExist($project, $library)
     {
-        $result = $this->connexion->execute('SELECT count(*) as nombre FROM '.$this->config['table_name'].' WHERE project= ? AND library=?', [$project, $library]);
+        $result = $this->connexion->executeQuery('SELECT count(*) as nombre FROM '.$this->config['table_name'].' WHERE project= ? AND library=?', [$project, $library], ['string', 'string']);
         $nb = $result->fetch();
 
         return $nb['nombre'] != 0;
