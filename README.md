@@ -1,20 +1,65 @@
 # cua
 Composer Update Analyser
 
-This utility can read the composer.lock for get all ligraby user by your project and run `composer update --dry-run` for get all necessary update.
+This utility can read the `composer.lock` for get all library used by your project and run `composer update --dry-run` for get all necessary install, update or remove actions.
 
-The output can is a yaml file or DBAL table.
+The output can is a `yaml` file or DBAL table.
 
-## DBAL table schema
+## Requirements
 
-project varchar(50)
-library varchar(250)
-version varchar(250)
-state varchar(20)
-to_library varchar(250)
-to_version varchar(250)
-deprecated bit
+* composer
+* php 5.5+
 
-Index idx_plv (project, library, version)
+## Install
 
+* Clone git repository or download tarball.
+* install dependency by `composer install -o`
+
+## Configure
+
+Create an file `cua.yml` at root cua folder.
+
+Put content :
+```
+projects:
+    project_name: /path/to/project
+composer_path: /usr/local/bin/composer # the path to composer
+persistance:
+    format: DbalPersistance # Persistence
+    parameters:
+        dbname: 'deps' # DBAL Database name
+        user: 'root' # DBAL database username
+        password: 'root' # DBALbatabase user password
+        host: 'localhost' # DBAL server name or ip
+        driver: 'pdo_mysql' # DBAL Driver name
+        table_name: 'dependencies' # the table name for DBAL persistance
+        path: ./all.yml # for YamlFile only
+
+```
+
+### DBAL Table creation
+
+If you use MySQL for persist, you can use the file `Sql/Create_Table.sql` for create table in your database.
+
+
+## Usage
+
+open console, go to cua root folder and type :
+
+```
+php ./cua check
+```
+
+This command launch the process for all setting project and store in persistance.
+
+
+# Contribute
+
+If you whant contribute, please fork my repo, add feature or fix bugs and create new pull request.
+
+
+# Todo
+
+[ ] Add script for create table on other Database (postgre, mssql, etc.).
+[ ] Get PHP and extentions requirements by project.
 

@@ -19,6 +19,7 @@
     },
     "bin": ["cua"],
     "require": {
+        "php": ">=5.5",
         "symfony/console": "^3.0",
         "symfony/yaml": "^3.0",
         "symfony/config": "^3.0",
