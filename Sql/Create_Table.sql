@@ -10,9 +10,9 @@ CREATE TABLE IF NOT EXISTS `dependencies` (
   `library` varchar(250) NOT NULL,
   `version` varchar(250) NOT NULL,
   `state` varchar(20) NOT NULL,
-  `to_library` varchar(250) NOT NULL,
-  `to_version` varchar(250) NOT NULL,
-  `deprecated` tinyint(1) NOT NULL,
+  `to_library` varchar(250) DEFAULT NULL,
+  `to_version` varchar(250) DEFAULT NULL,
+  `deprecated` tinyint(1) DEFAULT NULL,
   `updated_at` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 

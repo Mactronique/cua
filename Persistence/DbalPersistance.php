@@ -42,7 +42,6 @@ class DbalPersistance implements Persistence
             $this->removeLib($key, $data['uninstall']);
             $this->abandonedLib($key, $data['abandoned']);
         }
-
     }
 
     /**
@@ -125,6 +124,9 @@ class DbalPersistance implements Persistence
      */
     private function abandonedLib($project, array $abandonned)
     {
+        foreach ($abandonned as $key => $library) {
+            $this->connexion->update($this->config['table_name'], ['deprecated' => true], ['project' => $project, 'library' => $library], ['boolean', 'string', 'string']);
+        }
     }
 
     private function checkExist($project, $library)
@@ -140,7 +142,9 @@ class DbalPersistance implements Persistence
      */
     private function insert(array $data)
     {
+        $data['deprecated'] = false;
         $data['updated_at'] = new \DateTime();
+
         $this->connexion->insert($this->config['table_name'], $data, ['string', 'string', 'string', 'string', 'string', 'string', 'boolean', 'datetime']);
     }
 
@@ -154,7 +158,10 @@ class DbalPersistance implements Persistence
         $key['library'] = $data['library'];
         unset($data['project']);
         unset($data['library']);
+        if (array_key_exists('deprecated', $data)) {
+            unset($data['deprecated']);
+        }
 
-        $this->connexion->insert($this->config['table_name'], $data, $key, ['string', 'string', 'string', 'string', 'datetime', 'string', 'string']);
+        $this->connexion->update($this->config['table_name'], $data, $key, ['string', 'string', 'string', 'string', 'datetime', 'string', 'string']);
     }
 }
