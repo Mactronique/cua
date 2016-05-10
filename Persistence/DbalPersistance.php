@@ -7,6 +7,7 @@
  * @copyright 2016 - Jean-Baptiste Nahan
  * @license MIT
  */
+
 namespace Mactronique\CUA\Persistence;
 
 class DbalPersistance implements Persistence
@@ -18,12 +19,15 @@ class DbalPersistance implements Persistence
 
     private $connexion;
 
+    private $updated;
+
     /**
      * @param array $config
      */
     public function __construct(array $config)
     {
         $this->config = $config;
+        $this->updated = [];
     }
 
     /**
@@ -36,11 +40,16 @@ class DbalPersistance implements Persistence
         $this->connexion->connect();
 
         foreach ($content as $key => $data) {
+            if (in_array($key, $this->updated)) {
+                continue;
+            }
+            $this->removeAll($key);
             $this->installedLib($key, $data['installed']);
             $this->installLib($key, $data['install']);
             $this->updateLib($key, $data['update']);
             $this->removeLib($key, $data['uninstall']);
             $this->abandonedLib($key, $data['abandoned']);
+            $this->updated[] = $key;
         }
     }
 
@@ -163,5 +172,17 @@ class DbalPersistance implements Persistence
         }
 
         $this->connexion->update($this->config['table_name'], $data, $key, ['string', 'string', 'string', 'string', 'datetime', 'string', 'string']);
+    }
+
+    /**
+     * Mark all dependency to deleted.
+     * @param string $key
+     */
+    private function removeAll($project)
+    {
+        $data = ['state' => 'removed', 'to_library' => null, 'to_version' => null];
+        $data['updated_at'] = new \DateTime();
+
+        $this->connexion->update($this->config['table_name'], $data, ['project' => $project], ['string', 'string', 'string', 'datetime', 'string']);
     }
 }
