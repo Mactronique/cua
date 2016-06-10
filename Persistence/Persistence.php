@@ -3,25 +3,18 @@
 /**
  * This file is part of Composer Update Analyser package.
  *
- * @author Jean-Baptiste Nahan <jbnahan@gmail.com>
+ * @author Jean-Baptiste Nahan <jean-baptiste.nahan@inextenso.fr>
  * @copyright 2016 - Jean-Baptiste Nahan
  * @license MIT
  */
-namespace Mactronique\CUA\Persistence;
 
-use Psr\Log\LoggerInterface;
-use Psr\Log\NullLogger;
-use Symfony\Component\Process\Process;
-use Symfony\Component\Process\Exception\ProcessFailedException;
-use Symfony\Component\Process\Exception\ProcessTimedOutException;
-use Symfony\Component\Yaml\Yaml;
+namespace InExtenso\CUA\Persistence;
 
-
-interface Persistence {
-
-	/**
-	 * @param array $content Content to save
-	 * @param array $config custom config
-	 */
-	public function save(array $content, array $config = null);
+interface Persistence
+{
+    /**
+     * @param array $content Content to save
+     * @param array $config  custom config
+     */
+    public function save(array $content, array $config = null);
 }

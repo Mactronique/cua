@@ -3,12 +3,12 @@
 /**
  * This file is part of Composer Update Analyser package.
  *
- * @author Jean-Baptiste Nahan <jbnahan@gmail.com>
+ * @author Jean-Baptiste Nahan <jean-baptiste.nahan@inextenso.fr>
  * @copyright 2016 - Jean-Baptiste Nahan
  * @license MIT
  */
 
-namespace Mactronique\CUA\Persistence;
+namespace InExtenso\CUA\Persistence;
 
 class DbalPersistance implements Persistence
 {
@@ -176,6 +176,7 @@ class DbalPersistance implements Persistence
 
     /**
      * Mark all dependency to deleted.
+     *
      * @param string $key
      */
     private function removeAll($project)

@@ -3,11 +3,11 @@
 /**
  * This file is part of Composer Update Analyser package.
  *
- * @author Jean-Baptiste Nahan <jbnahan@gmail.com>
+ * @author Jean-Baptiste Nahan <jean-baptiste.nahan@inextenso.fr>
  * @copyright 2016 - Jean-Baptiste Nahan
  * @license MIT
  */
-namespace Mactronique\CUA\Service;
+namespace InExtenso\CUA\Service;
 
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;

@@ -1,10 +1,10 @@
 <?php
 
-namespace Mactronique\CUA;
+namespace InExtenso\CUA;
 
 use Symfony\Component\Console\Application;
-use Mactronique\CUA\Command\CheckCommand;
-use Mactronique\CUA\Configuration\MainConfiguration;
+use InExtenso\CUA\Command\CheckCommand;
+use InExtenso\CUA\Configuration\MainConfiguration;
 use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Input\InputInterface;
@@ -97,10 +97,11 @@ class CuaApplication extends Application
         return $this->config['composer_path'];
     }
 
-    public function definePersistance($name, $parameters){
-        $className = 'Mactronique\\CUA\\Persistence\\'.$name;
-        if(!class_exists($className)){
-            throw new \Exception("Unable to load this persistance class: ".$className, 1);
+    public function definePersistance($name, $parameters)
+    {
+        $className = 'InExtenso\\CUA\\Persistence\\'.$name;
+        if (!class_exists($className)) {
+            throw new \Exception('Unable to load this persistance class: '.$className, 1);
         }
         $this->persistance = new $className($parameters);
     }

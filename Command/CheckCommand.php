@@ -3,20 +3,18 @@
 /**
  * This file is part of Composer Update Analyser package.
  *
- * @author Jean-Baptiste Nahan <jbnahan@gmail.com>
+ * @author Jean-Baptiste Nahan <jean-baptiste.nahan@inextenso.fr>
  * @copyright 2016 - Jean-Baptiste Nahan
  * @license MIT
  */
-namespace Mactronique\CUA\Command;
+
+namespace InExtenso\CUA\Command;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Process\Process;
-use Symfony\Component\Process\Exception\ProcessFailedException;
-use Symfony\Component\Process\Exception\ProcessTimedOutException;
 
 class CheckCommand extends Command
 {
@@ -62,8 +60,8 @@ class CheckCommand extends Command
         if (!file_exists($composerPath)) {
             throw new \Exception('Invalid composer path '.$composerPath, 1);
         }
-        $service = new \Mactronique\CUA\Service\CheckUpdateService($composerPath);
-        
+        $service = new \InExtenso\CUA\Service\CheckUpdateService($composerPath);
+
         $projects = $this->getApplication()->getProjects();
 
         //Chargement du projet via la ligne de commande
@@ -76,19 +74,18 @@ class CheckCommand extends Command
 
         //Pas de fichier de config donc fichier de sortie obligatoire
         if ($input->hasParameterOption(['--no-config'], true) && null === $input->getOption('output')) {
-            throw new \Exception("Please set the output file option -o or --output", 1);
+            throw new \Exception('Please set the output file option -o or --output', 1);
         }
 
         $outputFile = $input->getOption('output');
-        $installedService = new \Mactronique\CUA\Service\InstalledLibraryService();
+        $installedService = new \InExtenso\CUA\Service\InstalledLibraryService();
 
         foreach ($projects as $projectName => $projectPath) {
-            
             $output->writeln(sprintf('Check <info>%s</info> at <comment>%s</comment>', $projectName, $projectPath));
             $resultProject = $service->checkcomposerUpdate($projectPath);
 
-            if($resultProject['error']!= ''){
-                $output->writeln(sprintf("<error> %s </error>", $resultProject['error']));
+            if ($resultProject['error'] != '') {
+                $output->writeln(sprintf('<error> %s </error>', $resultProject['error']));
             }
 
             $output->writeln(sprintf(

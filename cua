@@ -1,10 +1,9 @@
 #!/usr/bin/env php
 <?php
-// TestWebService.php
 
 require __DIR__.'/vendor/autoload.php';
 
-use Mactronique\CUA\CuaApplication;
+use InExtenso\CUA\CuaApplication;
 
 $application = new CuaApplication();
 $application->run();

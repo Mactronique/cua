@@ -1,20 +1,19 @@
 {
-    "name": "matronique/cua",
+    "name": "inextenso/cua",
     "type": "library",
     "description": "This application can manage many project composer update",
     "keywords": ["composer", "update", "dependecies", "management"],
-    "homepage": "https://github.com/macintoshplus/ComposerUpdateAnalyser",
+    "homepage": "https://github.com/InExtenso/cua",
     "license": "MIT",
     "authors": [
         {
             "name": "Jean-Baptiste Nahan",
-            "email": "jbnahan@gmail.com",
-            "homepage": "http://nahan.fr"
+            "email": "jean-baptiste.nahan@inextenso.fr"
         }
     ],
         "autoload": {
         "psr-4": {
-            "Mactronique\\CUA\\": ""
+            "InExtenso\\CUA\\": ""
         }
     },
     "bin": ["cua"],
