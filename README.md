@@ -37,6 +37,13 @@ persistance:
 
 ```
 
+### Usign with Redmine Cua Plugin
+
+Set the format to `RedmineCuaPersistance` and `table_name` to `cua_dependencies`
+
+In this case, the `project_name` set into the config file do same the project identifier from redmine.
+
+
 ### DBAL Table creation
 
 If you use MySQL for persist, you can use the file `Sql/Create_Table.sql` for create table in your database.

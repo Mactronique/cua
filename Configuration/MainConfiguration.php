@@ -24,6 +24,7 @@ class MainConfiguration implements ConfigurationInterface
             ->children()
                 ->arrayNode('projects')
                     ->isRequired()
+                    ->normalizeKeys(false)
                     ->cannotBeEmpty()
                     ->useAttributeAsKey('name')
                     ->prototype('scalar')
