@@ -1,5 +1,7 @@
-tool:
-    image: macintoshplus/composer:latest
-    volumes:
-        - ./:/src
-        - /var/www:/var/www
+version: '2'
+services:
+    tool:
+        image: macintoshplus/composer:latest
+        volumes:
+            - ./:/src
+            - /var/www:/var/www
