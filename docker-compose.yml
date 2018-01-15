@@ -1,7 +1,10 @@
 version: '2'
 services:
     tool:
-        image: macintoshplus/composer:latest
+        image: macintoshplus/php:php71
         volumes:
-            - ./:/src
+            - ./:/sources
             - /var/www:/var/www
+            - /usr/local/bin/composer:/usr/local/bin/composer
+        dns:
+            - 172.16.1.5

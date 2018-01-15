@@ -11,7 +11,7 @@
             "email": "jean-baptiste.nahan@inextenso.fr"
         }
     ],
-        "autoload": {
+    "autoload": {
         "psr-4": {
             "InExtenso\\CUA\\": ""
         }
