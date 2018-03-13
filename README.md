@@ -1,6 +1,8 @@
 # cua
 Composer Update Analyser
 
+[![Build Status](https://travis-ci.org/InExtenso/cua.svg?branch=master)](https://travis-ci.org/InExtenso/cua) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 This utility can read the `composer.lock` for get all library used by your project and run `composer update --dry-run` for get all necessary install, update or remove actions.
 
 The output can is a `yaml` file or DBAL table.
