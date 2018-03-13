@@ -24,7 +24,7 @@ class CuaApplication extends Application
 
     public function __construct()
     {
-        parent::__construct('Composer Update Analyser', '0.1');
+        parent::__construct('Composer Update Analyser', '1.0.0-alpha-3');
         $this->add(new CheckCommand());
     }
 
