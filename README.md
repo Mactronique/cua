@@ -10,7 +10,7 @@ The output can is a `yaml` file or DBAL table.
 ## Requirements
 
 * composer
-* php 5.5+
+* php 5.6+
 
 ## Install
 
