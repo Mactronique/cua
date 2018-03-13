@@ -1,0 +1,43 @@
+language: php
+
+php:
+  - 5.3
+  - 5.4
+  - 5.5
+  - 5.6
+  - 7.0
+  - 7.1
+  - 7.2
+  - nightly
+
+cache:
+  directories:
+    - vendor
+
+sudo: false
+
+env:
+  matrix:
+    - COMPOSER_PREFER="--prefer-stable"
+    - COMPOSER_PREFER="--prefer-lowest"
+
+matrix:
+  allow_failures:
+    - php: nightly
+    - php: 5.3
+    - php: 5.4
+    - php: 5.5
+    - php: 5.6
+  exclude:
+    - php: 7.0
+      env: COMPOSER_PREFER="--prefer-lowest"
+    - php: 7.1
+      env: COMPOSER_PREFER="--prefer-lowest"
+    - php: 7.2
+      env: COMPOSER_PREFER="--prefer-lowest"
+    - php: nightly
+      env: COMPOSER_PREFER="--prefer-lowest"
+
+script:
+  - composer update -o $COMPOSER_PREFER
+  - vendor/bin/atoum
