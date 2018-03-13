@@ -15,25 +15,27 @@ use Symfony\Component\Process\Process;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Exception\ProcessTimedOutException;
 
+class CheckUpdateService
+{
 
-class CheckUpdateService {
+    /**
+     * @var string
+     */
+    private $composerPath;
 
-	/**
-	 * @var string
-	 */
-	private $composerPath;
+    /**
+     * Construct the service
+     * @param string $composerPath
+     */
+    public function __construct($composerPath, LoggerInterface $logger = null)
+    {
+        $this->composerPath = $composerPath;
+        $this->logger = ($logger === null)? new NullLogger():$logger;
+    }
 
-	/**
-	 * Construct the service
-	 * @param string $composerPath
-	 */
-	public function __construct($composerPath, LoggerInterface $logger = null){
-		$this->composerPath = $composerPath;
-		$this->logger = ($logger === null)? new NullLogger():$logger;
-	}
-
-	public function checkComposerUpdate($projectPath){
-		$resultProject = [
+    public function checkComposerUpdate($projectPath)
+    {
+        $resultProject = [
             'install' => [],
             'uninstall' => [],
             'update' => [],
@@ -47,11 +49,11 @@ class CheckUpdateService {
         try {
             $process->mustRun();
         } catch (ProcessFailedException $e) {
-        	$this->logger->error('Process Fail', ['projectPath'=>$projectPath, 'exception'=>$e]);
+            $this->logger->error('Process Fail', ['projectPath'=>$projectPath, 'exception'=>$e]);
             $resultProject['error'] = $process->getErrorOutput();
             return $resultProject;
         } catch (ProcessTimedOutException $e) {
-        	$this->logger->error('Process time out', ['projectPath'=>$projectPath, 'exception'=>$e]);
+            $this->logger->error('Process time out', ['projectPath'=>$projectPath, 'exception'=>$e]);
             $resultProject['error'] = 'Time out '.$e->getMessage();
             return $resultProject;
         }
@@ -87,5 +89,5 @@ class CheckUpdateService {
             $resultProject['abandoned'] = $abandoned[1];
         }
         return $resultProject;
-	}
+    }
 }

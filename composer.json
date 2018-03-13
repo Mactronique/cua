@@ -16,6 +16,11 @@
             "InExtenso\\CUA\\": ""
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "InExtenso\\CUA\\Tests\\Units\\": "tests/Units"
+        }
+    },
     "bin": ["cua"],
     "require": {
         "php": ">=5.5",
@@ -27,5 +32,10 @@
         "symfony/var-dumper": "^3.0",
         "symfony/finder": "^3.0",
         "doctrine/dbal": "^2.5"
+    },
+    "require-dev": {
+        "atoum/atoum": "^3.0",
+        "atoum/autoloop-extension": "*",
+        "atoum/reports-extension": "*"
     }
 }
