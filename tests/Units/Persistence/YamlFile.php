@@ -14,7 +14,7 @@ class YamlFile extends atoum
 {
     public function testInit()
     {
-        $this->newTestedInstance(['path'=>'here']);
+        $this->newTestedInstance(['path'=>'here', 'path_security'=>'here_security']);
         $this->assert('type')->object($this->testedInstance)->isInstanceOf('InExtenso\CUA\Persistence\Persistence');
     }
 }
