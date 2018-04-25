@@ -16,29 +16,36 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class CheckCommand extends Command
+class CheckSecurityCommand extends Command
 {
     protected function configure()
     {
         $this
-            ->setName('check')
-            ->setDescription('Execute les tests')
+            ->setName('security')
+            ->setDescription('Run security check')
             ->addArgument(
                 'name',
                 InputArgument::OPTIONAL,
                 'Nom du projet à vérifier'
             )
             ->addOption(
-                'composer',
+                'checker',
                 null,
                 InputOption::VALUE_REQUIRED,
-                'The path to composer'
+                'The path to security-checker'
             )
             ->addOption(
                 'project',
                 null,
                 InputOption::VALUE_REQUIRED,
                 'The path to project'
+            )
+            ->addOption(
+                'lock_path',
+                null,
+                InputOption::VALUE_REQUIRED,
+                'The composer.lock path relative to project',
+                './composer.lock'
             )
             ->addOption(
                 'output',
@@ -51,16 +58,16 @@ class CheckCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $composerPath = $this->getApplication()->getComposerPath();
+        $securityChecker = $this->getApplication()->getSecurityChecker();
 
-        if ($input->getOption('composer')) {
-            $composerPath = $input->getOption('composer');
+        if ($input->getOption('checker')) {
+            $securityChecker = $input->getOption('checker');
         }
 
-        if (!file_exists($composerPath)) {
-            throw new \Exception('Invalid composer path '.$composerPath, 1);
+        if (!file_exists($securityChecker)) {
+            throw new \Exception('Invalid security-checker path '.$securityChecker, 1);
         }
-        $service = new \InExtenso\CUA\Service\CheckUpdateService($composerPath);
+        $service = new \InExtenso\CUA\Service\SecurityCheckService($securityChecker);
 
         $projects = $this->getApplication()->getProjects();
 
@@ -69,7 +76,7 @@ class CheckCommand extends Command
             if (null === $input->getArgument('name')) {
                 throw new \Exception('Please set the name of project', 1);
             }
-            $projects = [$input->getArgument('name') => $input->getOption('project')];
+            $projects = [$input->getArgument('name') => ['path' => $input->getOption('project'), 'check_security'=> true, 'lock_path'=>$input->getOption('lock_path'), 'php_path'=>'php']];
         }
 
         //Pas de fichier de config donc fichier de sortie obligatoire
@@ -80,24 +87,30 @@ class CheckCommand extends Command
         $outputFile = $input->getOption('output');
         $installedService = new \InExtenso\CUA\Service\InstalledLibraryService();
 
-        foreach ($projects as $projectName => $projectPath) {
-            $output->writeln(sprintf('Check <info>%s</info> at <comment>%s</comment>', $projectName, $projectPath));
-            $resultProject = $service->checkcomposerUpdate($projectPath);
+        foreach ($projects as $projectName => $projectConf) {
+            $projectPath = $projectConf['path'];
+            $lockPath = $projectConf['lock_path'];
+            
+            $output->writeln(sprintf('Check Security <info>%s</info> at <comment>%s</comment>', $projectName, $projectPath));
+
+            if (!$projectConf['check_security']) {
+                $output->writeln('<info>Skip</info>');
+                continue;
+            }
+            
+
+            $resultProject = $service->checkSecurity($projectPath, $lockPath, $projectConf['php_path']);
 
             if ($resultProject['error'] != '') {
                 $output->writeln(sprintf('<error> %s </error>', $resultProject['error']));
             }
 
             $output->writeln(sprintf(
-                'Result <info>%d</info> to install, <info>%d</info> to update, <info>%d</info> to remove, <error> %d </error> abandonned',
-                count($resultProject['install']),
-                count($resultProject['update']),
-                count($resultProject['uninstall']),
-                count($resultProject['abandoned'])
+                'Result <error> %d </error> dependency with security issue',
+                count($resultProject['result'])
             ));
-            $resultProject['installed'] = $installedService->getInstalledLibrary($projectPath);
-            $this->getApplication()->setProjectResult($projectName, $resultProject);
-            $this->getApplication()->saveResult($outputFile);
+            //$this->getApplication()->setProjectSecurityResult($projectName, $resultProject);
+            //$this->getApplication()->saveSecurityResult($outputFile);
         }
     }
 }

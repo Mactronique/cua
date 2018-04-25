@@ -1,0 +1,54 @@
+<?php
+
+/**
+ * This file is part of Composer Update Analyser package.
+ *
+ * @author Jean-Baptiste Nahan <jean-baptiste.nahan@inextenso.fr>
+ * @copyright 2016-2018 - Jean-Baptiste Nahan
+ * @license MIT
+ */
+namespace InExtenso\CUA\Configuration;
+
+use Symfony\Component\Config\Definition\ConfigurationInterface;
+use Symfony\Component\Config\Definition\Builder\TreeBuilder;
+
+class ProjectConfiguration implements ConfigurationInterface
+{
+    public function getConfigTreeBuilder()
+    {
+        $treeBuilder = new TreeBuilder();
+        $rootNode = $treeBuilder->root('main');
+
+        // ... add node definitions to the root of the tree
+        $rootNode
+            ->children()
+                ->arrayNode('projects')
+                    ->normalizeKeys(false)
+                    ->useAttributeAsKey('name')
+                    ->prototype('array')
+                        ->addDefaultsIfNotSet()
+                        ->children()
+                            ->scalarNode('path')
+                                ->cannotBeEmpty()
+                            ->end()
+                            ->scalarNode('lock_path')
+                                ->defaultValue('./composer.lock')
+                            ->end()
+                            ->booleanNode('check_dependencies')
+                                ->defaultTrue()
+                            ->end()
+                            ->booleanNode('check_security')
+                                ->defaultFalse()
+                            ->end()
+                            ->scalarNode('php_path')
+                                ->defaultValue('php')
+                            ->end()
+                        ->end()
+                    ->end()
+                ->end()
+            ->end()
+        ;
+
+        return $treeBuilder;
+    }
+}

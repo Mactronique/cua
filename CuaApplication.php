@@ -3,7 +3,9 @@
 namespace InExtenso\CUA;
 
 use Symfony\Component\Console\Application;
-use InExtenso\CUA\Command\CheckCommand;
+use InExtenso\CUA\Command\CheckDependenciesCommand;
+use InExtenso\CUA\Command\CheckSecurityCommand;
+use InExtenso\CUA\Command\ProjectListCommand;
 use InExtenso\CUA\Configuration\MainConfiguration;
 use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\Console\Input\ArgvInput;
@@ -20,12 +22,18 @@ class CuaApplication extends Application
 
     private $persistance;
 
-    private $results;
+    private $projectsProvider;
+
+    private $results = [];
+
+    private $securityResults = [];
 
     public function __construct()
     {
-        parent::__construct('Composer Update Analyser', '1.0.0-alpha-3');
-        $this->add(new CheckCommand());
+        parent::__construct('Composer Update Analyser', '1.1.0');
+        $this->add(new CheckDependenciesCommand());
+        $this->add(new CheckSecurityCommand());
+        $this->add(new ProjectListCommand());
     }
 
     /**
@@ -76,7 +84,7 @@ class CuaApplication extends Application
 
     public function getProjects()
     {
-        return $this->config['projects'];
+        return $this->projectsProvider->getProjects();
     }
 
     public function setProjectResult($projectName, array $content)
@@ -97,6 +105,25 @@ class CuaApplication extends Application
         return $this->config['composer_path'];
     }
 
+    public function setProjectSecurityResult($projectName, array $content)
+    {
+        $this->securityResults[$projectName] = $content;
+    }
+
+    public function saveSecurityResult($path = null)
+    {
+        var_dump($this->securityResults);
+        //$this->persistance->save($this->securityResults, $path);
+
+        //$content = Yaml::dump($this->results, 100);
+        //file_put_contents(($path !== null)? $path:$this->config['output'], $content);
+    }
+
+    public function getSecurityChecker()
+    {
+        return $this->config['security_checker_path'];
+    }
+
     public function definePersistance($name, $parameters)
     {
         $className = 'InExtenso\\CUA\\Persistence\\'.$name;
@@ -104,6 +131,15 @@ class CuaApplication extends Application
             throw new \Exception('Unable to load this persistance class: '.$className, 1);
         }
         $this->persistance = new $className($parameters);
+    }
+
+    protected function defineProjectProvider($config)
+    {
+        $className = 'InExtenso\\CUA\\ProjectProvider\\'.ucfirst($config['type']).'Provider';
+        if (!class_exists($className)) {
+            throw new \Exception('Unable to load this project provider class: '.$className, 1);
+        }
+        $this->projectsProvider = new $className($config['parameters']);
     }
 
     /**
@@ -124,13 +160,15 @@ class CuaApplication extends Application
      */
     private function boot(InputInterface $input)
     {
-        $this->config = ['output' => null, 'projects' => [], 'composer_path' => null];
-        if (!$input->hasParameterOption(['--no-config'], true)) {
-            $configFile = __DIR__.'/cua.yml';
-            $this->loadConfigurationFile($configFile);
-
-            $this->definePersistance($this->config['persistance']['format'], $this->config['persistance']['parameters']);
+        $this->config = ['output' => null, 'projects' => [], 'composer_path' => null, 'security_checker_path'=> null];
+        if ($input->hasParameterOption(['--no-config'], true)) {
+            return;
         }
+        $configFile = __DIR__.'/cua.yml';
+        $this->loadConfigurationFile($configFile);
+
+        $this->definePersistance($this->config['persistance']['format'], $this->config['persistance']['parameters']);
+        $this->defineProjectProvider($this->config['project_provider']);
     }
 
     /**

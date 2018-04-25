@@ -33,7 +33,7 @@ class CheckUpdateService
         $this->logger = ($logger === null)? new NullLogger():$logger;
     }
 
-    public function checkComposerUpdate($projectPath)
+    public function checkComposerUpdate($projectPath, $php_path)
     {
         $resultProject = [
             'install' => [],
@@ -43,7 +43,7 @@ class CheckUpdateService
             'error' => '',
         ];
 
-        $process = new Process($this->composerPath.' update --dry-run --no-ansi');
+        $process = new Process($php_path.' '.$this->composerPath.' update --dry-run --no-ansi');
         $process->setWorkingDirectory($projectPath);
         $process->setTimeout(300);
         try {

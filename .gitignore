@@ -1,3 +1,5 @@
 /vendor/
 cua.yml
 /build
+/*.yml
+/*.yaml
