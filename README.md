@@ -9,9 +9,9 @@ The output can is a `yaml` file or DBAL table.
 
 ## Requirements
 
-* (composer)[https://getcomposer.org/]
-* (php 5.6+)[http://php.net]
-* (security-checker)[https://security.sensiolabs.org/]
+* [composer](https://getcomposer.org/)
+* [php 5.6+](http://php.net)
+* [security-checker](https://security.sensiolabs.org/)
 
 ## Install
 
