@@ -32,13 +32,17 @@ security_checker_path: /usr/bin/security-checker # The path to security-checker 
 persistance:
     format: DbalPersistance # Persistence
     parameters:
-        dbname: 'deps' # DBAL Database name
-        user: 'root' # DBAL database username
-        password: 'root' # DBALbatabase user password
-        host: 'localhost' # DBAL server name or ip
-        driver: 'pdo_mysql' # DBAL Driver name
-        table_name: 'dependencies' # the table name for DBAL persistance
-        path: ./all.yml # for YamlFile only
+        dbname: 'deps'                      # DBAL Database name
+        user: 'root'                        # DBAL database username
+        password: 'root'                    # DBALbatabase user password
+        host: 'localhost'                   # DBAL server name or ip
+        driver: 'pdo_mysql'                 # DBAL Driver name
+        table_name: 'dependencies'          # the table name for DBAL persistance
+        table_name_security: 'security'     # the table name for DBAL persistance
+
+        path: ./all.yml                     # for YamlFile only
+        path_security: ./all_security.yml   # for YamlFile only
+
 project_provider:
     # type: redmine
     # parameters:

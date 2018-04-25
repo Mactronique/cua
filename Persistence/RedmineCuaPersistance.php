@@ -57,6 +57,54 @@ class RedmineCuaPersistance implements Persistence
         }
     }
 
+
+    
+    public function saveSecurity(array $content, array $config = null)
+    {
+        $this->connexion = \Doctrine\DBAL\DriverManager::getConnection($this->config);
+        $this->connexion->connect();
+
+        foreach ($content as $project => $securitydata) {
+            $projectId = $this->convertProjectCode($project);
+            $data = ['state' => 'fixed'];
+            $data['updated_at'] = new \DateTime();
+
+            $this->connexion->update($this->config['table_name_security'], $data, ['project_id' => $projectId, 'state' => 'open'], ['string', 'datetime', 'integer', 'string']);
+            if (count($securitydata) === 0) {
+                continue;
+            }
+
+            foreach ($securitydata as $library => $infos) {
+                $list = json_encode($infos['advisories']);
+                if ($this->checkSecurityExist($projectId, $library, $infos['version'])) {
+                    $this->connexion->update(
+                        $this->config['table_name_security'],
+                        [
+                            'details' => $list,
+                            'state' => 'open',
+                            'updated_at' => new \DateTime(),
+                        ],
+                        ['project_id' => $projectId, 'library'=>$library, 'version'=>$version],
+                        ['string', 'string', 'datetime', 'integer', 'string', 'string']
+                    );
+                } else {
+                    $this->connexion->insert(
+                        $this->config['table_name_security'],
+                        [
+                            'details' => $list,
+                            'state' => 'open',
+                            'updated_at' => new \DateTime(),
+                            'project_id' => $projectId,
+                            'library'=>$library,
+                            'version'=>$version
+                        ],
+                        ['string', 'string', 'datetime', 'integer', 'string', 'string']
+                    );
+                }
+            }
+        }
+    }
+
     /**
      * Manage the installed library.
      *
@@ -145,9 +193,17 @@ class RedmineCuaPersistance implements Persistence
     private function checkExist($project, $library)
     {
         $result = $this->connexion->executeQuery('SELECT count(*) as nombre FROM '.$this->config['table_name'].' WHERE project_id= ? AND library=?', [$project, $library], ['integer', 'string']);
-        $nb = $result->fetch();
+        $nb = $result->fetch(\PDO::FECTH_ASSOC);
 
-        return $nb['nombre'] != 0;
+        return intval($nb['nombre']) != 0;
+    }
+
+    private function checkSecurityExist($project, $library, $version)
+    {
+        $result = $this->connexion->executeQuery('SELECT count(*) as nombre FROM '.$this->config['table_name_security'].' WHERE project_id= ? AND library=? AND version=?', [$project, $library, $version], ['integer', 'string', 'string']);
+        $nb = $result->fetch(\PDO::FECTH_ASSOC);
+
+        return intval($nb['nombre']) != 0;
     }
 
     /**

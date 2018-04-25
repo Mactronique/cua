@@ -17,4 +17,10 @@ interface Persistence
      * @param array $config  custom config
      */
     public function save(array $content, array $config = null);
+
+    /**
+     * @param array $content Content to save
+     * @param array $config  custom config
+     */
+    public function saveSecurity(array $content, array $config = null);
 }

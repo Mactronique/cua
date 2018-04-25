@@ -23,3 +23,20 @@ ALTER TABLE `dependencies`
 
 ALTER TABLE `dependencies`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+
+CREATE TABLE IF NOT EXISTS `security` (
+  `id` int(11) NOT NULL,
+  `project` varchar(50) NOT NULL,
+  `library` varchar(255) NOT NULL,
+  `version` varchar(255) NOT NULL,
+  `state` varchar(20) NOT NULL,
+  `details` text NOT NULL,
+  `updated_at` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+ALTER TABLE `security`
+  ADD PRIMARY KEY (`id`);
+
+ALTER TABLE `security`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;

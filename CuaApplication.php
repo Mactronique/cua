@@ -112,11 +112,7 @@ class CuaApplication extends Application
 
     public function saveSecurityResult($path = null)
     {
-        var_dump($this->securityResults);
-        //$this->persistance->save($this->securityResults, $path);
-
-        //$content = Yaml::dump($this->results, 100);
-        //file_put_contents(($path !== null)? $path:$this->config['output'], $content);
+        $this->persistance->saveSecurity($this->securityResults, $path);
     }
 
     public function getSecurityChecker()

@@ -19,9 +19,13 @@ use Symfony\Component\Yaml\Yaml;
 class YamlFile implements Persistence
 {
     /**
-     * @var string default plath of file
+     * @var string default path of file
      */
     private $filePath;
+    /**
+     * @var string default path of file
+     */
+    private $fileSecurityPath;
 
     /**
      * @param array $config
@@ -29,6 +33,7 @@ class YamlFile implements Persistence
     public function __construct(array $config)
     {
         $this->filePath = $config['path'];
+        $this->fileSecurityPath = $config['path_security'];
     }
 
     /**
@@ -38,6 +43,13 @@ class YamlFile implements Persistence
     public function save(array $content, array $config = null)
     {
         $content = Yaml::dump($content, 100);
-        file_put_contents(($config !== null)? $config['path']:$this->filePath, $content);
+        file_put_contents(($config !== null && isset($config['path']))? $config['path']:$this->filePath, $content);
+    }
+
+
+    public function saveSecurity(array $content, array $config = null)
+    {
+        $content = Yaml::dump($content, 100);
+        file_put_contents(($config !== null && isset($config['path_security']))? $config['path_security']:$this->fileSecurityPath, $content);
     }
 }

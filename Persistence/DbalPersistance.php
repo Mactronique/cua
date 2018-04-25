@@ -53,6 +53,52 @@ class DbalPersistance implements Persistence
         }
     }
 
+    public function saveSecurity(array $content, array $config = null)
+    {
+        $this->connexion = \Doctrine\DBAL\DriverManager::getConnection($this->config);
+        $this->connexion->connect();
+
+        foreach ($content as $project => $securitydata) {
+            $data = ['state' => 'fixed'];
+            $data['updated_at'] = new \DateTime();
+
+            $this->connexion->update($this->config['table_name_security'], $data, ['project' => $project, 'state' => 'open'], ['string', 'datetime', 'string', 'string']);
+            
+            if (count($securitydata) === 0) {
+                continue;
+            }
+
+            foreach ($securitydata as $library => $infos) {
+                $list = json_encode($infos['advisories']);
+                if ($this->checkSecurityExist($project, $library, $infos['version'])) {
+                    $this->connexion->update(
+                        $this->config['table_name_security'],
+                        [
+                            'details' => $list,
+                            'state' => 'open',
+                            'updated_at' => new \DateTime(),
+                        ],
+                        ['project' => $project, 'library'=>$library, 'version'=>$version],
+                        ['string', 'string', 'datetime', 'string', 'string', 'string']
+                    );
+                } else {
+                    $this->connexion->insert(
+                        $this->config['table_name_security'],
+                        [
+                            'details' => $list,
+                            'state' => 'open',
+                            'updated_at' => new \DateTime(),
+                            'project' => $project,
+                            'library'=>$library,
+                            'version'=>$version
+                        ],
+                        ['string', 'string', 'datetime', 'string', 'string', 'string']
+                    );
+                }
+            }
+        }
+    }
+
     /**
      * Manage the installed library.
      *
@@ -185,5 +231,14 @@ class DbalPersistance implements Persistence
         $data['updated_at'] = new \DateTime();
 
         $this->connexion->update($this->config['table_name'], $data, ['project' => $project], ['string', 'string', 'string', 'datetime', 'string']);
+    }
+
+
+    private function checkSecurityExist($project, $library, $version)
+    {
+        $result = $this->connexion->executeQuery('SELECT count(*) as nombre FROM '.$this->config['table_name_security'].' WHERE project= ? AND library=? AND version=?', [$project, $library, $version], ['string', 'string', 'string']);
+        $nb = $result->fetch();
+
+        return $nb['nombre'] != 0;
     }
 }
