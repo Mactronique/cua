@@ -9,8 +9,9 @@ The output can is a `yaml` file or DBAL table.
 
 ## Requirements
 
-* composer
-* php 5.6+
+* (composer)[https://getcomposer.org/]
+* (php 5.6+)[http://php.net]
+* (security-checker)[https://security.sensiolabs.org/]
 
 ## Install
 
@@ -19,13 +20,13 @@ The output can is a `yaml` file or DBAL table.
 
 ## Configure
 
-Create an file `cua.yml` at root cua folder.
+Add an file `cua.yml` at root cua folder.
 
-Put content :
+Put content:
+
 ```
-projects:
-    project_name: /path/to/project
-composer_path: /usr/local/bin/composer # the path to composer
+composer_path: /usr/local/bin/composer # the path to composer executable
+security_checker_path: /usr/bin/security-checker # The path to security-checker executable
 persistance:
     format: DbalPersistance # Persistence
     parameters:
@@ -36,8 +37,35 @@ persistance:
         driver: 'pdo_mysql' # DBAL Driver name
         table_name: 'dependencies' # the table name for DBAL persistance
         path: ./all.yml # for YamlFile only
+project_provider:
+    # type: redmine
+    # parameters:
+    #     dbname: 'redmine'
+    #     user: 'db_user'
+    #     password: '*******'
+    #     host: 'localhost'
+    #     driver: 'pdo_mysql'
+    #     table_name: 'cua_settings'
+
+    type: file
+    parameters:
+        path: projects.yml # Location of the file project list from root cua install
+```
+
+Add an file `project.yml` ar root cua folder.
+
+Put content:
 
 ```
+projects:
+    'project_name':
+        path: /path/to/project
+        check_dependencies: true   # Optional, by default : true
+        lock_path: ./composer.lock # Optional, by default : ./composer.lock. Set the location of composer.lock file from project path.
+        check_security: false      # Optional, by default : false. Enable this project for command security
+        php_path: php7.2           # Optional, by default : php. The php executable name (or path) for run security-checker and composer
+```
+
 
 ### Usign with Redmine Cua Plugin
 
@@ -51,7 +79,17 @@ In this case, the `project_name` set into the config file do same the project id
 If you use MySQL for persist, you can use the file `Sql/Create_Table.sql` for create table in your database.
 
 
-## Usage
+## Check project configuration
+
+open console, go to cua root folder and type :
+
+```
+php ./cua project:list
+```
+
+This command print a table with all project configured and details.
+
+## Usage for check dependencies
 
 open console, go to cua root folder and type :
 
@@ -60,6 +98,17 @@ php ./cua check
 ```
 
 This command launch the process for all setting project and store in persistance.
+
+## Usage for check security
+
+open console, go to cua root folder and type :
+
+```
+php ./cua security
+```
+
+This command launch the process for all setting project and store in persistance.
+
 
 
 # Contribute
