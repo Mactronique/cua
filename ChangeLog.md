@@ -5,6 +5,7 @@ Change log
 
 * add security check
 * add get config from redmine configuration
+* move source file in src directory
 
 
 # 1.0.0

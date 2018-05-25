@@ -13,7 +13,7 @@
     ],
     "autoload": {
         "psr-4": {
-            "InExtenso\\CUA\\": ""
+            "InExtenso\\CUA\\": "src"
         }
     },
     "autoload-dev": {
