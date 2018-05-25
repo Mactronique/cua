@@ -98,19 +98,52 @@ class CheckSecurityCommand extends Command
                 continue;
             }
             
+            if (isset($projectConf['private_dependencies']) && count($projectConf['private_dependencies'])) {
+                $tmpPath = tempnam(sys_get_temp_dir(), 'cua');
+                $lock = file_get_contents($projectPath.'/'.$lockPath);
+
+                foreach ($projectConf['private_dependencies'] as $libraryName) {
+                    $findName = sprintf('"%s"', $libraryName);
+                    if (false === $pos = mb_strpos($lock, $findName)) {
+                        $output->writeln('Private dependency not found in composer.lock : <info>'.$findName.'</info> ');
+                        continue;
+                    }
+                    $result = mb_ereg_replace(''.$findName.'', sprintf('"%s"', md5($libraryName.uniqid())), $lock);
+                    if ($result === false) {
+                        $output->writeln('<error>Error in remplacement of private library</error>');
+                        continue;
+                    }
+
+                    if (false !== $pos = mb_strpos($result, $findName)) {
+                        $output->writeln('<error>Error : The new lock file contains always the replaced private library '.$findName.'</error>');
+                    }
+
+                    $lock = $result;
+                }
+                file_put_contents($tmpPath, $lock);
+                $lockPath = $tmpPath;
+
+                $output->writeln('Replace lock file by modified version : <info>'.$lockPath.'</info>');
+            }
 
             $resultProject = $service->checkSecurity($projectPath, $lockPath, $projectConf['php_path']);
 
+            if (isset($tmpPath)) {
+                //@unlink($tmpPath);
+            }
+
             if ($resultProject['error'] != '') {
                 $output->writeln(sprintf('<error> %s </error>', $resultProject['error']));
+                continue;
             }
 
             $output->writeln(sprintf(
                 'Result <error> %d </error> dependency with security issue',
                 count($resultProject['result'])
             ));
-            //$this->getApplication()->setProjectSecurityResult($projectName, $resultProject);
-            //$this->getApplication()->saveSecurityResult($outputFile);
+
+            $this->getApplication()->setProjectSecurityResult($projectName, $resultProject['result']);
+            $this->getApplication()->saveSecurityResult($outputFile);
         }
     }
 }

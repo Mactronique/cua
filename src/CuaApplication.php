@@ -160,7 +160,7 @@ class CuaApplication extends Application
         if ($input->hasParameterOption(['--no-config'], true)) {
             return;
         }
-        $configFile = __DIR__.'/cua.yml';
+        $configFile = __DIR__.'/../cua.yml';
         $this->loadConfigurationFile($configFile);
 
         $this->definePersistance($this->config['persistance']['format'], $this->config['persistance']['parameters']);

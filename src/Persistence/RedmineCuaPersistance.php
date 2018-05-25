@@ -75,6 +75,7 @@ class RedmineCuaPersistance implements Persistence
             }
 
             foreach ($securitydata as $library => $infos) {
+                dump($library, $infos);
                 $list = json_encode($infos['advisories']);
                 if ($this->checkSecurityExist($projectId, $library, $infos['version'])) {
                     $this->connexion->update(
@@ -84,7 +85,7 @@ class RedmineCuaPersistance implements Persistence
                             'state' => 'open',
                             'updated_at' => new \DateTime(),
                         ],
-                        ['project_id' => $projectId, 'library'=>$library, 'version'=>$version],
+                        ['project_id' => $projectId, 'library'=>$library, 'version'=>$infos['version']],
                         ['string', 'string', 'datetime', 'integer', 'string', 'string']
                     );
                 } else {
@@ -96,7 +97,7 @@ class RedmineCuaPersistance implements Persistence
                             'updated_at' => new \DateTime(),
                             'project_id' => $projectId,
                             'library'=>$library,
-                            'version'=>$version
+                            'version'=>$infos['version']
                         ],
                         ['string', 'string', 'datetime', 'integer', 'string', 'string']
                     );
@@ -193,7 +194,7 @@ class RedmineCuaPersistance implements Persistence
     private function checkExist($project, $library)
     {
         $result = $this->connexion->executeQuery('SELECT count(*) as nombre FROM '.$this->config['table_name'].' WHERE project_id= ? AND library=?', [$project, $library], ['integer', 'string']);
-        $nb = $result->fetch(\PDO::FECTH_ASSOC);
+        $nb = $result->fetch(\PDO::FETCH_ASSOC);
 
         return intval($nb['nombre']) != 0;
     }
@@ -201,7 +202,7 @@ class RedmineCuaPersistance implements Persistence
     private function checkSecurityExist($project, $library, $version)
     {
         $result = $this->connexion->executeQuery('SELECT count(*) as nombre FROM '.$this->config['table_name_security'].' WHERE project_id= ? AND library=? AND version=?', [$project, $library, $version], ['integer', 'string', 'string']);
-        $nb = $result->fetch(\PDO::FECTH_ASSOC);
+        $nb = $result->fetch(\PDO::FETCH_ASSOC);
 
         return intval($nb['nombre']) != 0;
     }

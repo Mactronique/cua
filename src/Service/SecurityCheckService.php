@@ -34,6 +34,7 @@ class SecurityCheckService
             'error' => '',
             'result' => [],
         ];
+
         $process = new Process($php_path.' '.$this->securityCheckPath.' security:check '.$lockPath.' --format=json ');
         $process->setWorkingDirectory($projectPath);
         $process->setTimeout(3000);
