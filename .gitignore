@@ -3,3 +3,4 @@ cua.yml
 /build
 /*.yml
 /*.yaml
+!/.travis.yml

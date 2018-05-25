@@ -3,6 +3,12 @@
 check: vendor
 	docker-compose run --rm tool bash -ci 'phpdismod xdebug && composer self-update && ./cua check $(c)'
 
+security: vendor
+	docker-compose run --rm tool bash -ci 'phpdismod xdebug && ./cua security $(c)'
+
+console:
+	docker-compose run --rm tool bash
+
 run-tests:
 	docker-compose run --rm tool bash -ci 'vendor/bin/atoum'
 

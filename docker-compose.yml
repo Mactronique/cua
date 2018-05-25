@@ -1,7 +1,7 @@
 version: '2'
 services:
     tool:
-        image: macintoshplus/php:php71
+        image: macintoshplus/php:php72
         volumes:
             - ./:/sources
             - /var/www:/var/www
