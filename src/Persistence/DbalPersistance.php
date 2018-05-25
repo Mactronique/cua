@@ -78,7 +78,7 @@ class DbalPersistance implements Persistence
                             'state' => 'open',
                             'updated_at' => new \DateTime(),
                         ],
-                        ['project' => $project, 'library'=>$library, 'version'=>$version],
+                        ['project' => $project, 'library'=>$library, 'version'=>$infos['version']],
                         ['string', 'string', 'datetime', 'string', 'string', 'string']
                     );
                 } else {
@@ -90,7 +90,7 @@ class DbalPersistance implements Persistence
                             'updated_at' => new \DateTime(),
                             'project' => $project,
                             'library'=>$library,
-                            'version'=>$version
+                            'version'=>$infos['version']
                         ],
                         ['string', 'string', 'datetime', 'string', 'string', 'string']
                     );
