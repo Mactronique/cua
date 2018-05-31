@@ -29,6 +29,7 @@ Put content:
 ```
 composer_path: /usr/local/bin/composer # the path to composer executable
 security_checker_path: /usr/bin/security-checker # The path to security-checker executable
+                                                 # (set 'internal' if you want use the Internal Security Checker)
 persistance:
     format: DbalPersistance # Persistence
     parameters:
