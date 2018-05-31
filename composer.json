@@ -31,7 +31,8 @@
         "symfony/process": "^3.0",
         "symfony/var-dumper": "^3.0",
         "symfony/finder": "^3.0",
-        "doctrine/dbal": "^2.5"
+        "doctrine/dbal": "^2.5",
+        "sensiolabs/security-checker": "^4.1"
     },
     "require-dev": {
         "atoum/atoum": "^3.0",
