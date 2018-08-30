@@ -9,6 +9,9 @@
  */
 namespace InExtenso\CUA\ProjectProvider;
 
+use Symfony\Component\Config\Definition\Processor;
+use InExtenso\CUA\Configuration\ProjectConfiguration;
+
 class RedmineProvider implements ProjectProviderInterface
 {
     private $config;
@@ -37,23 +40,23 @@ class RedmineProvider implements ProjectProviderInterface
         $connexion->connect();
 
         $config = [];
-        $result = $this->connexion->executeQuery('SELECT s.*, p.identifier as pid FROM `cua_settings` s LEFT JOIN `projects` p ON s.project_id = p.id');
+        $result = $connexion->executeQuery('SELECT s.*, p.identifier as pid FROM `cua_settings` s LEFT JOIN `projects` p ON s.project_id = p.id');
         while ($ligne = $result->fetch(\PDO::FETCH_ASSOC)) {
             $conf = [
                 'path' => $this->config['working_dir'].'/'.$ligne['pid'],
-                'check_dependencies' => boolval($ligne['check_dependencies']),
+                'check_dependencies' => boolval($ligne['check_update']),
                 'check_security' => boolval($ligne['check_security']),
             ];
-            if (!empty($conf['lock_path'])) {
+            if (!empty($ligne['lock_path'])) {
                 $conf['lock_path'] = $ligne['lock_path'];
             }
-            if (!empty($conf['php_path'])) {
-                $conf['php_path'] = $ligne['php_path'];
+            if (!empty($ligne['php_bin'])) {
+                $conf['php_path'] = $ligne['php_bin'];
             }
             $config[$ligne['pid']] = $conf;
         }
 
-        $configs = [$config];
+        $configs = [['projects' => $config]];
         $processor = new Processor();
         $configuration = new ProjectConfiguration();
         $this->projects = $processor->processConfiguration($configuration, $configs)['projects'];
