@@ -49,7 +49,6 @@ class RedmineCuaPersistance implements Persistence
                 continue;
             }
             $projectId = $this->convertProjectCode($key);
-            dump($projectId);
             $this->removeAll($projectId);
             $this->installedLib($projectId, $data['installed']);
             $this->installLib($projectId, $data['install']);
