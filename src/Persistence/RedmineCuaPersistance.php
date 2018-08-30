@@ -40,6 +40,8 @@ class RedmineCuaPersistance implements Persistence
     public function save(array $content, array $config = null)
     {
         $this->connexion = \Doctrine\DBAL\DriverManager::getConnection($this->config);
+        //Debug des requettes SQL :
+        //$this->connexion->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger());
         $this->connexion->connect();
 
         foreach ($content as $key => $data) {
@@ -47,6 +49,7 @@ class RedmineCuaPersistance implements Persistence
                 continue;
             }
             $projectId = $this->convertProjectCode($key);
+            dump($projectId);
             $this->removeAll($projectId);
             $this->installedLib($projectId, $data['installed']);
             $this->installLib($projectId, $data['install']);
@@ -187,7 +190,7 @@ class RedmineCuaPersistance implements Persistence
     private function abandonedLib($project, array $abandonned)
     {
         foreach ($abandonned as $key => $library) {
-            $this->connexion->update($this->config['table_name'], ['deprecated' => true], ['project_id' => $project, 'library' => $library], ['boolean', 'integer', 'string']);
+            $this->connexion->update($this->config['table_name'], ['deprecated' => true], ['project_id' => $project, 'library' => $library], ['deprecated' => 'boolean', 'project_id' => 'integer', 'library' => 'string']);
         }
     }
 
@@ -215,7 +218,19 @@ class RedmineCuaPersistance implements Persistence
         $data['deprecated'] = false;
         $data['updated_at'] = new \DateTime();
 
-        $this->connexion->insert($this->config['table_name'], $data, ['integer', 'string', 'string', 'string', 'string', 'string', 'boolean', 'datetime']);
+        $this->connexion->insert(
+            $this->config['table_name'],
+            $data, 
+            [
+                'project_id' => 'integer',
+                'library' => 'string',
+                'version' => 'string',
+                'state' => 'string',
+                'to_library' => 'string',
+                'to_version' => 'string',
+                'deprecated' => 'boolean',
+                'updated_at' =>  'datetime',
+            ]);
     }
 
     /**
@@ -232,7 +247,20 @@ class RedmineCuaPersistance implements Persistence
             unset($data['deprecated']);
         }
 
-        $this->connexion->update($this->config['table_name'], $data, $key, ['string', 'string', 'string', 'string', 'datetime', 'string', 'integer']);
+        $this->connexion->update(
+            $this->config['table_name'], 
+            $data, 
+            $key, 
+            [
+                'version' => 'string',
+                'state' => 'string',
+                'to_library' => 'string',
+                'to_version' => 'string',
+                'updated_at' =>  'datetime',
+                'library' => 'string',
+                'project_id' => 'integer'
+            ]
+        );
     }
 
     /**
