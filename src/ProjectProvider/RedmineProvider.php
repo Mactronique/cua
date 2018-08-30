@@ -40,7 +40,7 @@ class RedmineProvider implements ProjectProviderInterface
         $connexion->connect();
 
         $config = [];
-        $result = $connexion->executeQuery(sprintf('SELECT s.*, p.identifier as pid FROM `%s` s LEFT JOIN `projects` p ON s.project_id = p.id'), $this->config['db']['table_name']);
+        $result = $connexion->executeQuery(sprintf("SELECT s.*, p.identifier as pid FROM `%s` s LEFT JOIN `projects` p ON s.project_id = p.id LEFT JOIN `repositories` r ON s.project_id = r.project_id WHERE p.status= '1' and r.is_default = '1'", $this->config['db']['table_name']));
         while ($ligne = $result->fetch(\PDO::FETCH_ASSOC)) {
             $conf = [
                 'path' => $this->config['working_dir'].'/'.$ligne['pid'],
