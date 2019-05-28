@@ -1,10 +1,18 @@
 <?php
 
-namespace InExtenso\CUA;
+/**
+ * This file is part of Composer Update Analyser package.
+ *
+ * @author Jean-Baptiste Nahan <814683+macintoshplus@users.noreply.github.com>
+ * @copyright 2016-2019 - Jean-Baptiste Nahan
+ * @license MIT
+ */
+
+namespace Mactronique\CUA;
 
 use Symfony\Component\Console\Application;
-use InExtenso\CUA\Command\CheckCommand;
-use InExtenso\CUA\Configuration\MainConfiguration;
+use Mactronique\CUA\Command\CheckCommand;
+use Mactronique\CUA\Configuration\MainConfiguration;
 use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Input\InputInterface;
@@ -99,7 +107,7 @@ class CuaApplication extends Application
 
     public function definePersistance($name, $parameters)
     {
-        $className = 'InExtenso\\CUA\\Persistence\\'.$name;
+        $className = 'Mactronique\\CUA\\Persistence\\'.$name;
         if (!class_exists($className)) {
             throw new \Exception('Unable to load this persistance class: '.$className, 1);
         }
