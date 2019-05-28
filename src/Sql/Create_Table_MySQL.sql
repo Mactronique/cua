@@ -47,3 +47,20 @@ ALTER TABLE `security`
 
 ALTER TABLE `security`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+
+CREATE TABLE IF NOT EXISTS `projects` (
+  `code` varchar(10) NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `path` varchar(255) NOT NULL,
+  `lock_path` varchar(255) NOT NULL,
+  `php_path` varchar(255) NOT NULL,
+  `private_dependencies` text DEFAULT NULL,
+  `private_dependencies_strategy` varchar(10) DEFAULT 'remove',
+  `check_dependencies` tinyint(1) DEFAULT NULL,
+  `check_security` tinyint(1) DEFAULT NULL,
+  `updated_at` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+ALTER TABLE `projects`
+  ADD PRIMARY KEY (`code`);
