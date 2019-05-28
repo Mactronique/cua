@@ -10,7 +10,7 @@
 
 namespace Mactronique\CUA\Persistence;
 
-class RedmineCuaPersistance implements Persistence
+class RedmineCuaPersistence implements Persistence
 {
     /**
      * @var string default plath of file

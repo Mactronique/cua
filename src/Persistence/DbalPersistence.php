@@ -10,7 +10,7 @@
 
 namespace Mactronique\CUA\Persistence;
 
-class DbalPersistance implements Persistence
+class DbalPersistence implements Persistence
 {
     /**
      * @var string default plath of file
