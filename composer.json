@@ -46,5 +46,11 @@
     "atoum/atoum": "^3.0",
     "atoum/autoloop-extension": "*",
     "atoum/reports-extension": "*"
+  },
+  "extra": {
+    "branch-alias": {
+      "dev-master": "v2.x-dev",
+      "dev-v1.x": "v1.x-dev"
+    }
   }
 }
