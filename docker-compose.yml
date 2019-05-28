@@ -5,6 +5,6 @@ services:
         volumes:
             - ./:/sources
             - /var/www:/var/www
-            - /usr/local/bin/composer:/usr/local/bin/composer
+            - /home/jbnahan/.config/composer/vendor/bin/composer:/usr/local/bin/composer
         dns:
-            - 172.16.1.5
+            - 8.8.8.8
