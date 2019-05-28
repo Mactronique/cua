@@ -5,15 +5,23 @@ Composer Update Analyzer
 
 This utility can 
 * Read the `composer.lock` to get all library used by your project and run `composer update --dry-run` to get all necessary install, update or remove actions.
-* Run security-checker to get all library actually installed with know security issues.
+* Run security-checker to get all library actually installed with know security issues. __This feature send the `composer.lock` file at the remote service__.
 
 The output can be a `yaml` file or DBAL table.
 
 ## Requirements
 
 * [composer](https://getcomposer.org/)
-* [php 5.6+](http://php.net)
-* [security-checker](https://security.sensiolabs.org/)
+* [PHP 5.6+](http://php.net)
+* [security-checker](https://security.symfony.com/)
+
+## Recommended software
+
+> For Linux only.
+
+* [Docker](https://docs.docker.com/install/)
+* [Docker compose](https://docs.docker.com/compose/install/)
+* [Make](https://en.wikipedia.org/wiki/Makefile)
 
 ## Install
 
@@ -22,7 +30,7 @@ The output can be a `yaml` file or DBAL table.
 
 ## Configure
 
-Add a file `cua.yml` at the root cua folder.
+Add a file `cua.yml` (or copy the `cual.yml.dist` file) at the root cua folder.
 
 Put content:
 
@@ -45,21 +53,12 @@ persistance:
         path_security: ./all_security.yml   # for YamlFile only
 
 project_provider:
-    # type: redmine
-    # parameters:
-    #     dbname: 'redmine'
-    #     user: 'db_user'
-    #     password: '*******'
-    #     host: 'localhost'
-    #     driver: 'pdo_mysql'
-    #     table_name: 'cua_settings'
-
     type: file
     parameters:
         path: projects.yml # Location of the file project list of root cua install
 ```
 
-Add a file `project.yml` at the root cua folder.
+Add a file `project.yml` (or copy the `project.yml.dist` file) at the root cua folder.
 
 Put content:
 
@@ -128,9 +127,64 @@ Set the format to `RedmineCuaPersistance` and `table_name` to `cua_dependencies`
 In this case, the `project_name` set into the config file do the same project identifier from redmine.
 
 
+### File Project Provider
+
+This file contains all configuration for each project.
+
+Set the property `project_provider.type` to `file`.
+
+Set the property `project_provider.parameters.path` to the name of file contains all projects configuration.
+
+> Note : The file path is relative to the cua installation folder.
+
+Exemple of configuration:
+
+```
+[...]
+project_provider:
+    type: file
+    parameters:
+        path: projects.yml # Location of the file project list of root cua install
+```
+
+
+### Dbal Project Provider
+
+You can store the configuration into a database. The SQL script present into the folder `src/Sql` contains the table `projects` description.
+
+The table fields descriptions:
+* The field `code` of type string and 10 characters maximum of length is needed and contain a unique identity for the project
+* The field `name` of type string and 100 characters maximum of length is needed and contain user-friendly project name
+* The field `path` of type string and 255 characters maximum of length is needed and contain the path to the root project folder
+* The field `lock_path` of type string and 255 characters maximum of length is needed and contain the relative path (from the root project path) to the `composer.lock` file.
+* The field `php_path` of type string and 255 characters maximum of length is needed and contain the PHP executable name or full path.
+* The field `private_dependencies` of type text is optional. If defined this field do contain a JSON representation of the array. This array contains all private dependency name. Used only for the security check.
+* The field `private_dependencies_strategy` of type string and 10 characters maximum of length is optional, the default value is `remove`. The value can be `remove` or `hash`. This defines the behavior for the private dependency before send the `composer.lock` file for security checks.
+* The field `check_dependencies` of type tinyint(1) is optional, if defined to 1, enable the dependency check for this project.
+* The field `check_security` of type tinyint(1) is optional, if defined to 1, enable the security check for this project.
+* The field `updated_at` of type datetime is needed and contains the last update date and time.
+
+Example of configuration:
+
+```
+[...]
+project_provider:
+    type: file
+    parameters:
+        working_dir: /sources                   # The root folder used in prefix for project path
+        db:
+            dbname: 'deps'                      # DBAL Database name
+            user: 'root'                        # DBAL database username
+            password: 'root'                    # DBALbatabase user password
+            host: 'localhost'                   # DBAL server name or IP
+            driver: 'pdo_mysql'                 # DBAL Driver name
+        table_name: projects                    # The table name for read the project configuration
+```
+
+
 ## Check project configuration
 
-open console, go to the cua root folder and type :
+Open console, go to the cua root folder and type :
 
 ```
 php ./cua project:list
@@ -140,7 +194,7 @@ This command print a table with all project configured and details.
 
 ## Usage for check dependencies
 
-open console, go to the cua root folder and type :
+Open console, go to the cua root folder and type :
 
 ```
 php ./cua check
@@ -150,7 +204,7 @@ This command launch the process for all setting project and store in persistence
 
 ## Usage for check security
 
-open console, go to the cua root folder and type :
+Open console, go to the cua root folder and type :
 
 ```
 php ./cua security
@@ -162,7 +216,7 @@ This command launch the process for all setting project and store in persistence
 
 # Contribute
 
-If you want to contribute, please fork my repo, add features or fix bugs and create new pull request.
+If you want to contribute, please fork my repo, add features or fix bugs and create a new pull request.
 
 
 # Todo

@@ -8,16 +8,16 @@
 
 .PHONY: check security console run-tests
 
-check: vendor
+check: vendor cua.yml
 	docker-compose run --rm tool bash -ci 'phpdismod xdebug && php composer.phar self-update && ./cua check $(c)'
 
-security: vendor
+security: vendor cua.yml
 	docker-compose run --rm tool bash -ci 'phpdismod xdebug && ./cua security $(c)'
 
 console:
 	docker-compose run --rm tool bash
 
-run-tests:
+run-tests: vendor
 	docker-compose run --rm tool bash -ci 'vendor/bin/atoum'
 
 vendor: composer.lock
@@ -32,3 +32,6 @@ composer.phar:
 	@if [ "$(EXPECTED_SIGNATURE)" != "$(ACTUAL_SIGNATURE)" ]; then echo "Invalid signature"; exit 1; fi
 	php composer-setup.php
 	rm composer-setup.php
+
+cua.yml: cua.yml.dist
+	cp cua.yml.dist cua.yml

@@ -1,42 +1,50 @@
 {
-    "name": "mactronique/cua",
-    "type": "project",
-    "description": "This application can manage many project composer update",
-    "keywords": ["composer", "update", "dependecies", "management"],
-    "homepage": "https://github.com/Mactronique/cua",
-    "license": "MIT",
-    "authors": [
-        {
-            "name": "Jean-Baptiste Nahan",
-            "email": "814683+macintoshplus@users.noreply.github.com"
-        }
-    ],
-    "autoload": {
-        "psr-4": {
-            "Mactronique\\CUA\\": "src"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "Mactronique\\CUA\\Tests\\Units\\": "tests/Units"
-        }
-    },
-    "bin": ["cua"],
-    "require": {
-        "php": ">=5.6",
-        "symfony/console": "^3.0",
-        "symfony/yaml": "^3.0",
-        "symfony/config": "^3.0",
-        "psr/log": "^1.0",
-        "symfony/process": "^3.0",
-        "symfony/var-dumper": "^3.0",
-        "symfony/finder": "^3.0",
-        "doctrine/dbal": "^2.5",
-        "sensiolabs/security-checker": "^4.1"
-    },
-    "require-dev": {
-        "atoum/atoum": "^3.0",
-        "atoum/autoloop-extension": "*",
-        "atoum/reports-extension": "*"
+  "name": "mactronique/cua",
+  "type": "project",
+  "description": "This application can manage many project composer update",
+  "keywords": [
+    "composer",
+    "update",
+    "dependecies",
+    "management"
+  ],
+  "homepage": "https://github.com/Mactronique/cua",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Jean-Baptiste Nahan",
+      "email": "814683+macintoshplus@users.noreply.github.com"
     }
+  ],
+  "autoload": {
+    "psr-4": {
+      "Mactronique\\CUA\\": "src"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Mactronique\\CUA\\Tests\\Units\\": "tests/Units"
+    }
+  },
+  "bin": [
+    "cua"
+  ],
+  "require": {
+    "php": ">=5.6",
+    "symfony/console": "^3.0",
+    "symfony/yaml": "^3.0",
+    "symfony/config": "^3.0",
+    "psr/log": "^1.0",
+    "symfony/process": "^3.0",
+    "symfony/var-dumper": "^3.0",
+    "symfony/finder": "^3.0",
+    "doctrine/dbal": "^2.5",
+    "sensiolabs/security-checker": "^4.1",
+    "ext-json": "*"
+  },
+  "require-dev": {
+    "atoum/atoum": "^3.0",
+    "atoum/autoloop-extension": "*",
+    "atoum/reports-extension": "*"
+  }
 }
