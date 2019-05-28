@@ -1,0 +1,13 @@
+composer_path: composer # the path to the composer executable
+security_checker_path: security-checker # The path to security-checker executable
+
+persistance:
+    format: YamlFile
+    parameters:
+        path: ./all.yml                     # for YamlFile only
+        path_security: ./all_security.yml   # for YamlFile only
+
+project_provider:
+    type: file
+    parameters:
+        path: projects.yml # Location of the file project list of root cua install

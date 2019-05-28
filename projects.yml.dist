@@ -1,0 +1,9 @@
+projects:
+    'cua':
+        path: ./
+        check_dependencies: true   # Optional, by default : true
+        lock_path: ./composer.lock # Optional, by default : ./composer.lock. Set the location of composer.lock file from the project path.
+        check_security: false      # Optional, by default : false. Enable this project for command security
+        php_path: php           # Optional, by default : php. The php executable name (or path) for run security-checker and composer
+        private_dependencies: ~
+        private_dependencies_strategy: remove
