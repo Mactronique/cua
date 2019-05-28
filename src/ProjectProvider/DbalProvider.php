@@ -58,7 +58,7 @@ class DbalProvider implements ProjectProviderInterface
             ];
 
             if (!empty($ligne['private_dependencies'])) {
-                $conf['private_dependencies'] = json_decode($ligne['private_dependencies']);
+                $conf['private_dependencies'] = json_decode($ligne['private_dependencies'], true);
                 // JSON decode silent error
                 if ($conf['private_dependencies'] === false) {
                     $conf['private_dependencies'] = null;
