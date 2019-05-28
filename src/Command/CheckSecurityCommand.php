@@ -3,12 +3,12 @@
 /**
  * This file is part of Composer Update Analyser package.
  *
- * @author Jean-Baptiste Nahan <jean-baptiste.nahan@inextenso.fr>
- * @copyright 2016-2018 - Jean-Baptiste Nahan
+ * @author Jean-Baptiste Nahan <814683+macintoshplus@users.noreply.github.com>
+ * @copyright 2016-2019 - Jean-Baptiste Nahan
  * @license MIT
  */
 
-namespace InExtenso\CUA\Command;
+namespace Mactronique\CUA\Command;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -67,7 +67,7 @@ class CheckSecurityCommand extends Command
         if (!file_exists($securityChecker)) {
             throw new \Exception('Invalid security-checker path '.$securityChecker, 1);
         }
-        $service = new \InExtenso\CUA\Service\SecurityCheckService($securityChecker);
+        $service = new \Mactronique\CUA\Service\SecurityCheckService($securityChecker);
 
         $projects = $this->getApplication()->getProjects();
 
@@ -85,7 +85,7 @@ class CheckSecurityCommand extends Command
         }
 
         $outputFile = $input->getOption('output');
-        $installedService = new \InExtenso\CUA\Service\InstalledLibraryService();
+        $installedService = new \Mactronique\CUA\Service\InstalledLibraryService();
 
         foreach ($projects as $projectName => $projectConf) {
             $projectPath = $projectConf['path'];

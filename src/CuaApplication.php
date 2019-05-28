@@ -139,7 +139,7 @@ class CuaApplication extends Application
 
     protected function defineProjectProvider($config)
     {
-        $className = 'InExtenso\\CUA\\ProjectProvider\\'.ucfirst($config['type']).'Provider';
+        $className = 'Mactronique\\CUA\\ProjectProvider\\'.ucfirst($config['type']).'Provider';
         if (!class_exists($className)) {
             throw new \Exception('Unable to load this project provider class: '.$className, 1);
         }
