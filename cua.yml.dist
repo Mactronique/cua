@@ -1,5 +1,5 @@
 composer_path: composer # the path to the composer executable
-security_checker_path: security-checker # The path to security-checker executable
+security_checker_path: security-checker # The path to security-checker executable or 'internal' for use the integrated checker
 
 persistance:
     format: YamlFile

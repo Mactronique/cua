@@ -10,6 +10,7 @@
 
 namespace Mactronique\CUA\Command;
 
+use Mactronique\CUA\Service\SecurityCheckService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -64,7 +65,7 @@ class CheckSecurityCommand extends Command
             $securityChecker = $input->getOption('checker');
         }
 
-        if (!file_exists($securityChecker)) {
+        if (!file_exists($securityChecker) && $securityChecker !== SecurityCheckService::INTERNAL) {
             throw new \Exception('Invalid security-checker path '.$securityChecker, 1);
         }
         $service = new \Mactronique\CUA\Service\SecurityCheckService($securityChecker);
@@ -127,9 +128,8 @@ class CheckSecurityCommand extends Command
             }
 
             $resultProject = $service->checkSecurity($projectPath, $lockPath, $projectConf['php_path']);
-
             if (isset($tmpPath)) {
-                //@unlink($tmpPath);
+                @unlink($tmpPath);
             }
 
             if ($resultProject['error'] != '') {

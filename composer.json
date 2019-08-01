@@ -39,7 +39,7 @@
     "symfony/var-dumper": "^3.0",
     "symfony/finder": "^3.0",
     "doctrine/dbal": "^2.5",
-    "sensiolabs/security-checker": "^4.1",
+    "sensiolabs/security-checker": "^5.0",
     "ext-json": "*"
   },
   "require-dev": {
