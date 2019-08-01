@@ -10,6 +10,8 @@
 
 namespace Mactronique\CUA\Command;
 
+use Mactronique\CUA\Service\CheckUpdateService;
+use Mactronique\CUA\Service\InstalledLibraryService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -60,7 +62,7 @@ class CheckDependenciesCommand extends Command
         if (!file_exists($composerPath)) {
             throw new \Exception('Invalid composer path '.$composerPath, 1);
         }
-        $service = new \Mactronique\CUA\Service\CheckUpdateService($composerPath);
+        $service = new CheckUpdateService($composerPath);
 
         $projects = $this->getApplication()->getProjects();
 
@@ -78,7 +80,7 @@ class CheckDependenciesCommand extends Command
         }
 
         $outputFile = $input->getOption('output');
-        $installedService = new \Mactronique\CUA\Service\InstalledLibraryService();
+        $installedService = new InstalledLibraryService();
 
         foreach ($projects as $projectName => $projectConf) {
             $projectPath = $projectConf['path'];

@@ -32,7 +32,7 @@ class FileProvider implements ProjectProviderInterface
         if (null !== $this->projects && is_array($this->projects)) {
             return $this->projects;
         }
-        $filePath = __DIR__.'/../'.$this->config['path'];
+        $filePath = __DIR__.'/../../'.$this->config['path'];
         if (!file_exists($filePath)) {
             throw new \Exception("Unable to load file : ".$filePath, 1);
         }

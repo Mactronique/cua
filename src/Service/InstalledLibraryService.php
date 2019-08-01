@@ -38,6 +38,12 @@ class InstalledLibraryService
             foreach ($json['packages'] as $value) {
                 $libraries[$value['name']] = $value['version'];
             }
+            if (!isset($json['platform'])) {
+                continue;
+            }
+            foreach ($json['platform'] as $platform => $version) {
+                $libraries[$platform] = $version;
+            }
         }
 
         return $libraries;

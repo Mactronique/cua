@@ -19,6 +19,11 @@ class CheckUpdateService
 {
 
     /**
+     * @var LoggerInterface|NullLogger
+     */
+    private $logger;
+
+    /**
      * @var string
      */
     private $composerPath;
