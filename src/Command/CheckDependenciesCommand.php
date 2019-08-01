@@ -28,7 +28,7 @@ class CheckDependenciesCommand extends Command
             ->addArgument(
                 'name',
                 InputArgument::OPTIONAL,
-                'Nom du projet à vérifier'
+                'The project name to check'
             )
             ->addOption(
                 'composer',
@@ -66,12 +66,30 @@ class CheckDependenciesCommand extends Command
 
         $projects = $this->getApplication()->getProjects();
 
-        //Chargement du projet via la ligne de commande
+        $customName = $input->getArgument('name');
+        // Check one project found in configuration
+        if (null !== $customName && !$input->getOption('project')) {
+            if (!isset($projects[$customName])) {
+                throw new \Exception(sprintf('The name of project %s is not configured', $customName), 1);
+            }
+            $output->writeln(sprintf('Check for one specific project <info>"%s"</info>', $customName));
+            $projects = [$customName => $projects[$customName]];
+        }
+
+        //Load the project config from the commmand line
         if ($input->getOption('project')) {
-            if (null === $input->getArgument('name')) {
+            if (null === $customName) {
                 throw new \Exception('Please set the name of project', 1);
             }
-            $projects = [$input->getArgument('name') => ['path' => $input->getOption('project'), 'check_dependencies' => true, 'php_path'=>'php']];
+            $customPath = $input->getOption('project');
+            $output->writeln(
+                sprintf(
+                    'Check for one custom project <info>"%s"</info> at <info>"%s"</info>',
+                    $customName,
+                    $customPath
+                )
+            );
+            $projects = [$customName => ['path' => $customPath, 'check_dependencies' => true, 'php_path'=>'php']];
         }
 
         //Pas de fichier de config donc fichier de sortie obligatoire
