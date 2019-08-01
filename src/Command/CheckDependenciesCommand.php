@@ -12,7 +12,6 @@ namespace Mactronique\CUA\Command;
 
 use Mactronique\CUA\Service\CheckUpdateService;
 use Mactronique\CUA\Service\InstalledLibraryService;
-use Mactronique\CUA\Service\PlatformNeededService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -82,7 +81,6 @@ class CheckDependenciesCommand extends Command
 
         $outputFile = $input->getOption('output');
         $installedService = new InstalledLibraryService();
-        $platformService = new PlatformNeededService();
 
         foreach ($projects as $projectName => $projectConf) {
             $projectPath = $projectConf['path'];
@@ -92,10 +90,6 @@ class CheckDependenciesCommand extends Command
                 $output->writeln('<info>Skip</info>');
                 continue;
             }
-
-            $resultProjectPlatform = $platformService->getPlatformRequirement($projectPath);
-            $output->writeln(sprintf("Plateform requirement %d", count($resultProjectPlatform)));
-            dump($resultProjectPlatform);
 
             $resultProject = $service->checkcomposerUpdate($projectPath, $projectConf['php_path']);
 
