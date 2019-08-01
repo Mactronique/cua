@@ -218,10 +218,3 @@ This command launch the process for all setting project and store in persistence
 
 If you want to contribute, please fork my repo, add features or fix bugs and create a new pull request.
 
-
-# Todo
-
-[ ] Add script to creating tables on other Database (postgre, mssql, etc.).
-
-[ ] Get PHP and extentions requirements by the project.
-
